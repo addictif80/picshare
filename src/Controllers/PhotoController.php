@@ -41,6 +41,14 @@ class PhotoController
             foreach ($files as $k => $v) $files[$k] = [$v];
         }
 
+        // Ensure upload directories exist and are writable
+        foreach (['photos', 'compressed', 'watermarked'] as $dir) {
+            $path = UPLOAD_PATH . '/' . $dir;
+            if (!is_dir($path)) {
+                mkdir($path, 0775, true);
+            }
+        }
+
         $maxSize   = (int) setting('max_file_size_mb', 20) * 1024 * 1024;
         $uploaded  = [];
         $errors    = [];
@@ -59,7 +67,11 @@ class PhotoController
             $stored   = generateToken(16) . '.' . $ext;
             $destOrig = UPLOAD_PATH . '/photos/' . $stored;
 
-            if (!move_uploaded_file($tmp, $destOrig)) { $errors[] = $orig . ' : impossible de sauvegarder'; continue; }
+            if (!move_uploaded_file($tmp, $destOrig)) {
+                $writable = is_writable(UPLOAD_PATH . '/photos') ? '' : ' (dossier non accessible en écriture)';
+                $errors[] = $orig . ' : impossible de sauvegarder' . $writable;
+                continue;
+            }
 
             // Compress for display
             $compressed = 'c_' . $stored;
