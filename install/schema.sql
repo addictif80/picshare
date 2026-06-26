@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `email` VARCHAR(255) NOT NULL UNIQUE,
   `name` VARCHAR(150) NOT NULL,
   `role` ENUM('admin','user') NOT NULL DEFAULT 'user',
-  `otp_code` VARCHAR(8) NULL,
+  `otp_code` VARCHAR(255) NULL,
   `otp_expires_at` DATETIME NULL,
   `last_login_at` DATETIME NULL,
   `is_active` TINYINT(1) NOT NULL DEFAULT 1,
