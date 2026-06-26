@@ -151,7 +151,7 @@ CREATE TABLE IF NOT EXISTS `settings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Default settings
-INSERT INTO `settings` (`key`, `value`) VALUES
+INSERT IGNORE INTO `settings` (`key`, `value`) VALUES
 ('smtp_host', ''),
 ('smtp_port', '587'),
 ('smtp_user', ''),
