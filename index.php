@@ -3,6 +3,11 @@
 declare(strict_types=1);
 
 // Bootstrap
+if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
+    http_response_code(503);
+    die('<html><body style="font-family:sans-serif;text-align:center;padding:80px"><h1>⚙️ Configuration requise</h1><p>Veuillez exécuter <code>composer install</code> sur le serveur avant d\'utiliser l\'application.</p></body></html>');
+}
+
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/config/config.php';
 
@@ -19,12 +24,6 @@ use PicShare\Controllers\PublicController;
 
 // Start session
 Session::start();
-
-// Check installation
-$dbConfig = require __DIR__ . '/config/database.php';
-if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
-    die('Please run: composer install');
-}
 
 // Check if DB is initialized (skip for install route)
 $uri = $_SERVER['REQUEST_URI'] ?? '/';
