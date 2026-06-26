@@ -16,7 +16,6 @@
 
   // CSRF helper for fetch
   window.fetchPost = function (url, data = {}) {
-    const csrf = document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] || '';
     return fetch(url, {
       method: 'POST',
       headers: {
@@ -24,6 +23,17 @@
         'X-Requested-With': 'XMLHttpRequest',
       },
       body: Object.entries(data).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&'),
+    });
+  };
+
+  // DELETE via POST + method override (for servers that block DELETE)
+  window.fetchDelete = function (url) {
+    return fetch(url, {
+      method: 'POST',
+      headers: {
+        'X-HTTP-Method-Override': 'DELETE',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
     });
   };
 

@@ -226,7 +226,7 @@ function approvePhoto(id, status) {
 
 function deletePhoto(id) {
   if (!confirm('Supprimer cette photo ?')) return;
-  fetch(`/photos/${id}`, { method: 'DELETE', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+  fetch(`/photos/${id}`, { method: 'POST', headers: { 'X-HTTP-Method-Override': 'DELETE', 'X-Requested-With': 'XMLHttpRequest' } })
     .then(r => r.json()).then(d => { if (d.success) document.getElementById('photo-' + id)?.remove(); });
 }
 </script>

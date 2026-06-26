@@ -104,7 +104,7 @@ function togglePromo(id) {
 }
 function deletePromo(id) {
   if (!confirm('Supprimer ce code promo ?')) return;
-  fetch('/admin/promo-codes/' + id, { method: 'DELETE' })
+  fetch('/admin/promo-codes/' + id, { method: 'POST', headers: { 'X-HTTP-Method-Override': 'DELETE', 'X-Requested-With': 'XMLHttpRequest' } })
     .then(r => r.json())
     .then(d => { if (d.success) document.getElementById('promo-row-' + id)?.remove(); });
 }

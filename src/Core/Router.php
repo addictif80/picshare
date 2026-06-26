@@ -16,10 +16,30 @@ class Router
         $this->routes['POST'][$path] = $handler;
     }
 
+    public function delete(string $path, callable|array $handler): void
+    {
+        $this->routes['DELETE'][$path] = $handler;
+        // Also handle DELETE via POST with _method=DELETE override
+        $this->routes['POST_DELETE'][$path] = $handler;
+    }
+
+    public function put(string $path, callable|array $handler): void
+    {
+        $this->routes['PUT'][$path] = $handler;
+    }
+
     public function dispatch(string $method, string $uri): void
     {
         $uri = strtok($uri, '?');
         $uri = '/' . trim($uri, '/');
+
+        // Support method override via X-HTTP-Method-Override header or _method field
+        if ($method === 'POST') {
+            $override = $_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'] ?? $_POST['_method'] ?? null;
+            if ($override && in_array(strtoupper($override), ['DELETE', 'PUT', 'PATCH'])) {
+                $method = strtoupper($override);
+            }
+        }
 
         $routes = $this->routes[$method] ?? [];
 

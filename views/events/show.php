@@ -96,7 +96,7 @@ $isOwner = ($user['role'] === 'admin' || $event['owner_id'] == $user['id']);
 <script>
 function removeManager(eventId, userId) {
   if (!confirm('Retirer ce co-gestionnaire ?')) return;
-  fetch(`/events/${eventId}/managers/${userId}`, { method: 'DELETE', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+  fetch(`/events/${eventId}/managers/${userId}`, { method: 'POST', headers: { 'X-HTTP-Method-Override': 'DELETE', 'X-Requested-With': 'XMLHttpRequest' } })
     .then(r => r.json()).then(d => { if (d.success) location.reload(); });
 }
 </script>
