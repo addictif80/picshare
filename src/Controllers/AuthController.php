@@ -38,11 +38,19 @@ class AuthController
             [password_hash($otp, PASSWORD_DEFAULT), $expires, $user['id']]
         );
 
-        MailService::sendOtp($user['email'], $user['name'], $otp);
+        $smtpConfigured = !empty(setting('smtp_host')) && !empty(setting('smtp_user'));
+        if ($smtpConfigured) {
+            MailService::sendOtp($user['email'], $user['name'], $otp);
+            $msg = 'Un code à 6 chiffres a été envoyé à ' . $email;
+        } else {
+            // SMTP not configured — log OTP so admin can bootstrap the system
+            error_log('[PicShare OTP] ' . $email . ' → code: ' . $otp);
+            $msg = 'SMTP non configuré — le code OTP a été écrit dans le log PHP (error_log).';
+        }
 
         Session::set('otp_user_id', $user['id']);
         Session::set('otp_email', $email);
-        flash('success', 'Un code à 6 chiffres a été envoyé à ' . $email);
+        flash('success', $msg);
         redirect('/login/verify');
     }
 
