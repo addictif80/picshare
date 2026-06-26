@@ -1,0 +1,27 @@
+{
+    "name": "picshare/picshare",
+    "description": "PicShare - Event Photo Sharing Platform",
+    "type": "project",
+    "require": {
+        "php": ">=8.1",
+        "phpmailer/phpmailer": "^6.9",
+        "stripe/stripe-php": "^13.0",
+        "chillerlan/php-qrcode": "^5.0",
+        "intervention/image": "^2.7",
+        "ext-gd": "*",
+        "ext-pdo": "*",
+        "ext-zip": "*",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "PicShare\\": "src/"
+        },
+        "files": [
+            "src/Helpers/helpers.php"
+        ]
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}

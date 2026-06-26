@@ -1,0 +1,13 @@
+Options -Indexes
+RewriteEngine On
+
+# Protect sensitive directories
+RewriteRule ^(config|src|storage|views|vendor)/ - [F,L]
+
+# Block direct access to uploads (serve through PHP for watermark)
+RewriteRule ^public/uploads/ - [F,L]
+
+# Route all requests through index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?_url=/$1 [QSA,L]

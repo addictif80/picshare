@@ -1,0 +1,8 @@
+# Deny access to install if .installed exists
+<Files "index.php">
+  <IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{DOCUMENT_ROOT}/install/.installed -f
+    RewriteRule ^ - [F,L]
+  </IfModule>
+</Files>

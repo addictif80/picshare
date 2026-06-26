@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PicShare
 
-## Getting Started
+Plateforme de partage de photos pour événements.
 
-First, run the development server:
+## Installation
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Prérequis
+- PHP >= 8.1 avec extensions : GD, PDO, ZIP, JSON
+- MySQL >= 8.0 / MariaDB >= 10.6
+- Composer
+- Serveur Apache avec mod_rewrite
+
+### Étapes
+
+1. **Cloner/déposer les fichiers** sur le serveur
+
+2. **Installer les dépendances** :
+   ```bash
+   composer install --no-dev
+   ```
+
+3. **Permissions** :
+   ```bash
+   chmod -R 755 public/uploads storage
+   chmod -R 777 public/uploads storage
+   ```
+
+4. **Accéder à l'installeur** : `https://votre-domaine.com/install/`
+
+5. **Configurer** dans Administration → Paramètres :
+   - SMTP (emails)
+   - Stripe (paiements)
+   - Filigrane
+   - Logo du site
+   - Tarification
+
+6. **Supprimer le dossier install** après installation pour la sécurité.
+
+## Tâche CRON (nettoyage automatique)
+
+Ajouter dans le cron du serveur (nettoyage quotidien des albums expirés) :
+
+```
+0 3 * * * curl -s -X POST https://votre-domaine.com/admin/cleanup -H "X-Cron-Key: VOTRE_CLE"
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ou configurer via l'interface admin → "Nettoyage auto".
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+picshare/
+├── config/         Configuration DB et app
+├── install/        Assistant d'installation
+├── public/         Assets CSS/JS + uploads (servis via PHP)
+├── src/            Code PHP (PSR-4)
+│   ├── Controllers/
+│   ├── Core/
+│   ├── Helpers/
+│   └── Services/
+├── storage/        Archives ZIP + QR codes (non public)
+├── vendor/         Dépendances Composer
+├── views/          Templates PHP
+└── index.php       Point d'entrée
+```
 
-## Learn More
+## Stripe
 
-To learn more about Next.js, take a look at the following resources:
+URL webhook à configurer dans le dashboard Stripe :
+`https://votre-domaine.com/webhook/stripe`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Événements à activer : `checkout.session.completed`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## CyberPanel
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Créer un site PHP 8.1+
+2. Déposer les fichiers dans le dossier public_html
+3. Activer mod_rewrite (activé par défaut sur CyberPanel/OpenLiteSpeed)
+4. Configurer le fichier `.htaccess` (déjà fourni)
