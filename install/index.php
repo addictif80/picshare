@@ -89,9 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $pdo->prepare('INSERT INTO users (email, name, role) VALUES (?, ?, ?)')->execute([$email, $name, 'admin']);
 
-                // Create .installed flag
-                file_put_contents(BASE_PATH . '/install/.installed', date('Y-m-d H:i:s'));
-
+                // .installed is created on step 3 display, AFTER redirect
                 header('Location: /install/?step=3');
                 exit;
             }
@@ -161,7 +159,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <button type="submit" class="btn">Créer l'administrateur →</button>
     </form>
 
-  <?php elseif ($step === 3): ?>
+  <?php elseif ($step === 3):
+    // Create .installed flag here so the 403 block doesn't fire before we render
+    if (!file_exists(BASE_PATH . '/install/.installed')) {
+        file_put_contents(BASE_PATH . '/install/.installed', date('Y-m-d H:i:s'));
+    }
+  ?>
     <div class="step-indicator">
       <div class="step-dot done"></div>
       <div class="step-dot done"></div>
