@@ -200,6 +200,9 @@ class ImageService
     {
         $info = @getimagesize($path);
         if (!$info) return false;
-        return in_array($info[2], [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP, IMAGETYPE_GIF]);
+        if (in_array($info[2], [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP, IMAGETYPE_GIF])) return true;
+        // HEIC/HEIF from iPhones: getimagesize returns false, fallback to mime sniffing
+        $mime = mime_content_type($path);
+        return in_array($mime, ['image/heic', 'image/heif', 'image/heic-sequence', 'image/heif-sequence']);
     }
 }

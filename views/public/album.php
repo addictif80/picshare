@@ -176,6 +176,11 @@ function uploadFiles(files) {
       if (progress) progress.style.display = 'none';
       if (data.uploaded?.length) location.reload();
       if (data.errors?.length) alert('Erreurs :\n' + data.errors.join('\n'));
+      if (!data.uploaded?.length && !data.errors?.length) alert('Aucune photo envoyée. Vérifiez le format (JPG, PNG, WEBP).');
+    })
+    .catch(() => {
+      if (progress) progress.style.display = 'none';
+      alert('Erreur réseau lors de l\'envoi. Réessayez.');
     });
 }
 

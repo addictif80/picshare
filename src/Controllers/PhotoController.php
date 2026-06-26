@@ -63,11 +63,32 @@ class PhotoController
 
             if (!ImageService::isValidImage($tmp)) { $errors[] = $orig . ' : format non supporté'; continue; }
 
-            $ext      = strtolower(pathinfo($orig, PATHINFO_EXTENSION)) ?: 'jpg';
+            $ext = strtolower(pathinfo($orig, PATHINFO_EXTENSION)) ?: 'jpg';
+            // HEIC/HEIF from iPhones → convert to JPEG
+            $mime = mime_content_type($tmp);
+            if (in_array($mime, ['image/heic', 'image/heif', 'image/heic-sequence', 'image/heif-sequence'])) {
+                $ext = 'jpg';
+            }
             $stored   = generateToken(16) . '.' . $ext;
             $destOrig = UPLOAD_PATH . '/photos/' . $stored;
 
-            if (!move_uploaded_file($tmp, $destOrig)) {
+            if ($ext === 'jpg' && in_array($mime, ['image/heic', 'image/heif', 'image/heic-sequence', 'image/heif-sequence'])) {
+                // Try to convert HEIC using ImageMagick if available
+                if (class_exists('Imagick')) {
+                    try {
+                        $imagick = new \Imagick($tmp);
+                        $imagick->setImageFormat('jpeg');
+                        $imagick->writeImage($destOrig);
+                        $imagick->clear();
+                    } catch (\Exception $e) {
+                        $errors[] = $orig . ' : format HEIC non convertible sur ce serveur';
+                        continue;
+                    }
+                } else {
+                    $errors[] = $orig . ' : format HEIC non supporté (utilisez JPG ou PNG)';
+                    continue;
+                }
+            } elseif (!move_uploaded_file($tmp, $destOrig)) {
                 $writable = is_writable(UPLOAD_PATH . '/photos') ? '' : ' (dossier non accessible en écriture)';
                 $errors[] = $orig . ' : impossible de sauvegarder' . $writable;
                 continue;
